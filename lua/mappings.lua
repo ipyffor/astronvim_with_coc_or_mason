@@ -10,7 +10,8 @@ function M.mappings(maps)
 
   maps.v["K"] = { ":move '<-2<CR>gv-gv", desc = "Move line up", silent = true }
   maps.v["J"] = { ":move '>+1<CR>gv-gv", desc = "Move line down", silent = true }
-
+  
+  maps.i["<C-Enter>"] = { "<esc>o", desc = "jump new line", silent = true }
   maps.i["<C-s>"] = { "<esc>:w<cr>a", desc = "Save file", silent = true }
 
   maps.n["<Leader>wo"] = { "<C-w>o", desc = "Close other screen" }
@@ -36,9 +37,13 @@ function M.mappings(maps)
   -- telescope plugin mappings
   if is_available "telescope.nvim" then
     maps.v["<Leader>f"] = { desc = "󰍉 Find" }
+    maps.n["<Leader>fs"] = { "<esc>:w<cr>", desc = "Save file", silent = true }
+    maps.n["<Leader>ff"] = { ":lua require('telescope.builtin').find_files( { cwd = vim.fn.expand('%:p:h') })<cr>", desc = "Find files" }
     maps.n["<Leader>fT"] = { "<cmd>TodoTelescope<cr>", desc = "Find TODOs" }
+    maps.n["<Leader>mm"] = { ":Telescope notify<cr>", desc = "View notify history" }
+    maps.n["<Leader>fr"] = { ":Telescope oldfiles<cr>", desc = "Recent files" }
     -- buffer switching
-    maps.n["<Leader>bt"] = {
+    maps.n["<Leader>bb"] = {
       function()
         if #vim.t.bufs > 1 then
           require("telescope.builtin").buffers { sort_mru = true, ignore_current_buffer = true }
