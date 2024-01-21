@@ -1,6 +1,109 @@
 local system = vim.loop.os_uname().sysname
 local is_available = require("astrocore").is_available
 local M = {}
+local pluginKeys = {}
+-- nvim-cmp 自动补全
+pluginKeys.cmp = function(cmp)
+  local feedkey = function(key, mode)
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
+  end
+  local function has_words_before()
+    local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+    return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match "%s" == nil
+  end
+  return {
+    -- 出现补全
+
+    ---- 自定义代码段跳转到下一个参数
+    --["<C-l>"] = cmp.mapping(function(_)
+    --if vim.fn["vsnip#available"](1) == 1 then
+    --feedkey("<Plug>(vsnip-expand-or-jump)", "")
+    --end
+    --end, {"i", "s"}),
+
+    ---- 自定义代码段跳转到上一个参数
+    --["<C-h>"] = cmp.mapping(function()
+    --if vim.fn["vsnip#jumpable"](-1) == 1 then
+    --feedkey("<Plug>(vsnip-jump-prev)", "")
+    --end
+    --end, {"i", "s"}),
+
+    -- Super Tab
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif require("luasnip").expand_or_jumpable() then
+        vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-expand-or-jump", true, true, true), "")
+        -- elseif vim.fn["vsnip#available"](1) == 1 then
+        --     feedkey("<Plug>(vsnip-expand-or-jump)", "")
+        -- elseif has_words_befo`
+      else
+        fallback()         -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
+      end
+    end, { "i", "s" }),
+
+    ["<S-Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif require("luasnip").jumpable(-1) then
+        vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-jump-prev", true, true, true), "")
+        -- elseif vim.fn["vsnip#jumpable"](-1) == 1 then
+        -- feedkey("<Plug>(vsnip-jump-prev)", "")
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+    -- end of super Tab
+
+    ["<A-.>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
+    -- 取消
+    ["<A-,>"] = cmp.mapping({
+      i = cmp.mapping.abort(),
+      c = cmp.mapping.close(),
+    }),
+    -- 上一个
+    ["<A-k>"] = cmp.mapping.select_prev_item(),
+    -- 下一个
+    ["<A-j>"] = cmp.mapping(function()
+      if cmp.visible() then
+        cmp.select_next_item { behavior = cmp.SelectBehavior.Select }
+      else
+        cmp.complete()
+      end
+    end, { "i", "s" })
+    ,
+    -- 确认
+    ["<CR>"] = cmp.mapping.confirm({
+      select = true,
+      behavior = cmp.ConfirmBehavior.Replace,
+    }),
+    -- 如果窗口内容太多，可以滚动
+    -- ["<C-u>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
+    -- ["<C-d>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
+    -- ["<C-p>"] = cmp.config.disable,
+    -- ["<C-n>"] = cmp.config.disable
+  }
+end
+
+pluginKeys.cmp_cmdline = function(cmp, default_mappings)
+  -- require("utils").print_r(default_mappings)
+  -- 禁用补全选择与历史命令冲突，默认用tab选择
+  -- 大写P, table里小写认为不同的键，虽然按键是一样的，因此用table传递快捷键注意大小写一致
+  default_mappings["<C-P>"] = cmp.mapping(function(fallback)
+    fallback()
+    -- previous history
+    -- vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Up>', true, true, true), 'c', true)
+  end, { "c" })
+  -- next history
+  default_mappings["<C-N>"] = cmp.mapping(function(fallback)
+    fallback()
+    -- vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Down>', true, true, true), 'c', true)
+  end, { "c" })
+  -- require("utils").print_r(default_mappings)
+  return default_mappings
+end
+
+M.pluginKeys = pluginKeys
 
 function M.mappings(maps)
   maps.n["<Leader>n"] = false
@@ -10,11 +113,88 @@ function M.mappings(maps)
 
   maps.v["K"] = { ":move '<-2<CR>gv-gv", desc = "Move line up", silent = true }
   maps.v["J"] = { ":move '>+1<CR>gv-gv", desc = "Move line down", silent = true }
-  
+
   maps.i["<C-Enter>"] = { "<esc>o", desc = "jump new line", silent = true }
   maps.i["<C-s>"] = { "<esc>:w<cr>a", desc = "Save file", silent = true }
 
   maps.n["<Leader>wo"] = { "<C-w>o", desc = "Close other screen" }
+
+  -- windows 分屏快捷键
+  maps.n["sv"] = { ":vsp<CR>", desc = "Split vertically", silent = true }
+  maps.n["sh"] = { ":sp<CR>", desc = "Split horizontally", silent = true }
+
+  -- 关闭当前
+  maps.n["sc"] = { "<C-w>c", desc = "Close current", silent = true }
+
+  -- 关闭其他
+  maps.n["so"] = { "<C-w>o", desc = "Close others", silent = true }
+
+  -- Alt + hjkl  窗口之间跳转
+  maps.n["<A-h>"] = { "<C-w>h", desc = "Jump to left window", silent = true }
+  maps.n["<A-j>"] = { "<C-w>j", desc = "Jump to bottom window", silent = true }
+  maps.n["<A-k>"] = { "<C-w>k", desc = "Jump to top window", silent = true }
+  maps.n["<A-l>"] = { "<C-w>l", desc = "Jump to down window", silent = true }
+
+  -- 左右比例控制
+  maps.n["<C-Left>"] = { ":vertical resize -2<CR>", desc = "Decrease width", silent = true }
+  maps.n["<C-Right>"] = { ":vertical resize +2<CR>", desc = "Increase width", silent = true }
+  -- maps.n["s,"] = { ":vertical resize -20<CR>", desc = "Decrease height", silent = true }
+  -- maps.n["s."] = { ":vertical resize +20<CR>", desc = "opt", silent = true }
+  -- 上下比例
+  -- maps.n["sj"] = { ":resize +10<CR>", desc = "opt", silent = true }
+  -- maps.n["sk"] = { ":resize -10<CR>", desc = "opt", silent = true }
+  maps.n["<C-Down>"] = { ":resize +2<CR>", desc = "Increase height", silent = true }
+  maps.n["<C-Up>"] = { ":resize -2<CR>", desc = "Decrease height", silent = true }
+  -- 等比例
+  maps.n["s="] = { "<C-w>=", desc = "Balance window", silent = true }
+
+  -- Terminal相关
+  -- maps.n["<Leader>t"] = { ":sp | terminal<CR>", desc = "terminal vertical", silent = true }
+  -- maps.n["<Leader>vt"] = { ":vsp | terminal<CR>", desc = "termial horizontal", silent = true }
+  maps.t["<Esc>"] = { "<C-\\><C-n>", silent = true }
+  maps.t["<A-h>"] = { [[ <C-\><C-N><C-w>h ]], silent = true }
+  maps.t["<A-j>"] = { [[ <C-\><C-N><C-w>j ]], silent = true }
+  maps.t["<A-k>"] = { [[ <C-\><C-N><C-w>k ]], silent = true }
+  maps.t["<A-l>"] = { [[ <C-\><C-N><C-w>l ]], silent = true }
+
+  -- -- visual模式下缩进代码
+  -- maps.v["<"] = { "<gv", silent = true }
+  -- maps.v[">"] = { ">gv", silent = true }
+  -- -- 上下移动选中文本
+  -- maps.v["J"] = { ":move '>+1<CR>gv-gv", silent = true }
+  -- maps.v["K"] = { ":move '<-2<CR>gv-gv", silent = true }
+
+
+  -- 上下滚动浏览
+  -- maps.n["<C-j>"] = { "4j", silent = true }
+  -- maps.n["<C-k>"] = { "4k", silent = true }
+  -- -- ctrl u / ctrl + d  只移动9行，默认移动半屏
+  -- maps.n["<C-u>"] = { "9k", silent = true }
+  -- maps.n["<C-d>"] = { "9j", silent = true }
+
+  -- 在visual 模式里粘贴不要复制
+  maps.v["p"] = { '"_dP', silent = true }
+
+  -- insert 模式下，移动一个字符
+  maps.i["<C-h>"] = { "<ESC>hi", silent = true }
+  maps.i["<C-l>"] = { "<ESC>la", silent = true }
+
+
+  -- nvim-tree
+  maps.n["<A-m>"] = { ":Neotree toggle<CR>", silent = true }
+  maps.n["<Leader>m"] = { ":Neotree toggle<CR>", silent = true }
+
+
+  -- bufferline
+  -- 左右Tab切换
+  maps.n["<C-h>"] = { ":BufferLineCyclePrev<CR>", silent = true }
+  maps.n["<C-l>"] = { ":BufferLineCycleNext<CR>", silent = true }
+  -- 关闭
+  --"moll/vim-bbye"
+  maps.n["<C-w>"] = { ":Bdelete!<CR>", silent = true }
+  maps.n["<Leader>bl"] = { ":BufferLineCloseRight<CR>", silent = true }
+  maps.n["<Leader>bh"] = { ":BufferLineCloseLeft<CR>", silent = true }
+  maps.n["<Leader>bc"] = { ":BufferLinePickClose<CR>", silent = true }
 
   if vim.g.neovide then
     if system == "Darwin" then
@@ -37,8 +217,29 @@ function M.mappings(maps)
   -- telescope plugin mappings
   if is_available "telescope.nvim" then
     maps.v["<Leader>f"] = { desc = "󰍉 Find" }
+
+    -- Telescope
+    -- 查找文件
+    maps.n["<Leader>fp"] = { ":Telescope find_files<CR>", desc = "Find files", silent = true }
+    maps.n["<Leader>fl"] = {
+      ':lua require("telescope.builtin")' ..
+      '.find_files({cwd = vim.fs.normalize("/")})<CR>',
+      desc = "Find files /",
+      silent = true
+    }
+    maps.n["<Leader>ff"] = { ":Telescope file_browser<CR>", desc = "Telescope file_browser", silent = true }
+    maps.n["<Leader>fP"] = { ":Telescope media_files<CR>", desc = "Telescope media_files", silent = true }
+    -- 全局搜索
+    maps.n["<Leader>sp"] = { ":Telescope live_grep<CR>", desc = "Telescope live_grep", silent = true }
+    maps.n["<Leader>ss"] = {
+      ':lua require("telescope.builtin")' ..
+      '.current_buffer_fuzzy_find({results_ts_highlight = false})<CR>',
+      desc = "Search in current buffer",
+      silent = true
+    }
     maps.n["<Leader>fs"] = { "<esc>:w<cr>", desc = "Save file", silent = true }
-    maps.n["<Leader>ff"] = { ":lua require('telescope.builtin').find_files( { cwd = vim.fn.expand('%:p:h') })<cr>", desc = "Find files" }
+    -- maps.n["<Leader>ff"] = { ":lua require('telescope.builtin').find_files( { cwd = vim.fn.expand('%:p:h') })<cr>", desc =
+    -- "Find files" }
     maps.n["<Leader>fT"] = { "<cmd>TodoTelescope<cr>", desc = "Find TODOs" }
     maps.n["<Leader>mm"] = { ":Telescope notify<cr>", desc = "View notify history" }
     maps.n["<Leader>fr"] = { ":Telescope oldfiles<cr>", desc = "Recent files" }
@@ -90,10 +291,8 @@ function M.mappings(maps)
       desc = "Select VirtualEnv",
     }
     maps.n["<Leader>lV"] = {
-      function()
-        require("astrocore").notify("Current Env:" .. require("venv-selector").get_active_venv(), vim.log.levels.INFO)
-      end,
-      desc = "Show Current VirtualEnv",
+      "<cmd>VenvSelectCached<CR>",
+      desc = "VenvSelectCached",
     }
   end
 
@@ -348,13 +547,13 @@ function M.mappings(maps)
   -- 多个窗口之间跳转
   maps.n["<Leader>w="] = { "<C-w>=", desc = "Make all window equal" }
   maps.n["<TAB>"] =
-    { function() require("astrocore.buffer").nav(vim.v.count > 0 and vim.v.count or 1) end, desc = "Next buffer" }
+  { function() require("astrocore.buffer").nav(vim.v.count > 0 and vim.v.count or 1) end, desc = "Next buffer" }
   maps.n["<S-TAB>"] = {
     function() require("astrocore.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
     desc = "Previous buffer",
   }
   maps.n["<Leader>bo"] =
-    { function() require("astrocore.buffer").close_all(true) end, desc = "Close all buffers except current" }
+  { function() require("astrocore.buffer").close_all(true) end, desc = "Close all buffers except current" }
   maps.n["<Leader>ba"] = { function() require("astrocore.buffer").close_all() end, desc = "Close all buffers" }
   maps.n["<Leader>bc"] = { function() require("astrocore.buffer").close() end, desc = "Close buffer" }
   maps.n["<Leader>bC"] = { function() require("astrocore.buffer").close(0, true) end, desc = "Force close buffer" }

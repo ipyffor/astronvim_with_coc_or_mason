@@ -1,8 +1,10 @@
 return {
   "rebelot/heirline.nvim",
+  dependencies = {
+    "linux-cultist/venv-selector.nvim"
+  },
   opts = function(_, opts)
     local status = require "astroui.status"
-
     local statusline = { -- statusline
       hl = { fg = "fg", bg = "bg" },
       status.component.mode(),
@@ -14,7 +16,7 @@ return {
       status.component.cmd_info(),
       status.component.fill(),
       status.component.lsp(),
-      -- status.component.virtual_env(),
+      status.component.virtual_env(),
       status.component.treesitter(),
       status.component.nav(),
       status.component.mode { surround = { separator = "right" } },
