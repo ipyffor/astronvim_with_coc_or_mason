@@ -21,6 +21,7 @@ return {
         filetypes = { "python" },
         root_dir = function(...)
           return require("lspconfig.util").root_pattern(unpack {
+            ".git",
             "pyproject.toml",
             "setup.py",
             "setup.cfg",

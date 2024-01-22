@@ -185,16 +185,16 @@ function M.mappings(maps)
   maps.n["<Leader>m"] = { ":Neotree toggle<CR>", silent = true }
 
 
-  -- bufferline
-  -- 左右Tab切换
-  maps.n["<C-h>"] = { ":BufferLineCyclePrev<CR>", silent = true }
-  maps.n["<C-l>"] = { ":BufferLineCycleNext<CR>", silent = true }
-  -- 关闭
-  --"moll/vim-bbye"
-  maps.n["<C-w>"] = { ":Bdelete!<CR>", silent = true }
-  maps.n["<Leader>bl"] = { ":BufferLineCloseRight<CR>", silent = true }
-  maps.n["<Leader>bh"] = { ":BufferLineCloseLeft<CR>", silent = true }
-  maps.n["<Leader>bc"] = { ":BufferLinePickClose<CR>", silent = true }
+  -- -- bufferline
+  -- -- 左右Tab切换
+  -- maps.n["<C-h>"] = { ":BufferLineCyclePrev<CR>", silent = true }
+  -- maps.n["<C-l>"] = { ":BufferLineCycleNext<CR>", silent = true }
+  -- -- 关闭
+  -- --"moll/vim-bbye"
+  -- maps.n["<C-w>"] = { ":Bdelete!<CR>", silent = true }
+  -- maps.n["<Leader>bl"] = { ":BufferLineCloseRight<CR>", silent = true }
+  -- maps.n["<Leader>bh"] = { ":BufferLineCloseLeft<CR>", silent = true }
+  -- maps.n["<Leader>bc"] = { ":BufferLinePickClose<CR>", silent = true }
 
   if vim.g.neovide then
     if system == "Darwin" then
@@ -237,7 +237,7 @@ function M.mappings(maps)
       desc = "Search in current buffer",
       silent = true
     }
-    maps.n["<Leader>fs"] = { "<esc>:w<cr>", desc = "Save file", silent = true }
+    maps.n["<Leader>fs"] = { "<cmd>w<CR>", desc = "Save file", silent = true }
     -- maps.n["<Leader>ff"] = { ":lua require('telescope.builtin').find_files( { cwd = vim.fn.expand('%:p:h') })<cr>", desc =
     -- "Find files" }
     maps.n["<Leader>fT"] = { "<cmd>TodoTelescope<cr>", desc = "Find TODOs" }
@@ -570,27 +570,28 @@ function M.mappings(maps)
   maps.n["<Leader>lg"] = { "<Cmd>LspLog<CR>", desc = "Show lsp log" }
 
   if is_available "flash.nvim" then
-    maps.n["<Leader>s"] = {
+    maps.n["<Leader>j"] = { desc = "Jump" }
+    maps.n["<Leader>jj"] = {
       function() require("flash").jump() end,
       desc = "Flash",
     }
-    maps.x["<Leader>s"] = {
+    maps.x["<Leader>jj"] = {
       function() require("flash").jump() end,
       desc = "Flash",
     }
-    maps.o["<Leader>s"] = {
+    maps.o["<Leader>jj"] = {
       function() require("flash").jump() end,
       desc = "Flash",
     }
-    maps.n["<Leader><Leader>s"] = {
+    maps.n["<Leader>js"] = {
       function() require("flash").treesitter() end,
       desc = "Flash Treesitter",
     }
-    maps.x["<Leader><Leader>s"] = {
+    maps.x["<Leader>js"] = {
       function() require("flash").treesitter() end,
       desc = "Flash Treesitter",
     }
-    maps.o["<Leader><Leader>s"] = {
+    maps.o["<Leader>js"] = {
       function() require("flash").treesitter() end,
       desc = "Flash Treesitter",
     }

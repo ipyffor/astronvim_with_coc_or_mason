@@ -33,7 +33,7 @@ return {
       local conda_envs = os.getenv("CONDA_ENVS")
       local conda_base = "~/miniconda3/"
       if not conda_envs then
-        local conda_base = vim.fn.system('conda info --base')
+        conda_base = vim.fn.system('conda info --base')
         if conda_base ~= '' then
           -- 去除输出中可能的换行符
           conda_base = string.gsub(conda_base, '\n', '')
