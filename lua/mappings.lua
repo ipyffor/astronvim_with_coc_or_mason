@@ -181,6 +181,12 @@ function M.mappings(maps)
 
 
   -- nvim-tree
+  -- local get_project_root = require("project_nvim.project").get_project_root
+  -- local neotreecmd = require("neo-tree.command")
+  -- maps.n["<A-m>"] = { function () neotreecmd.execute({ toggle = true, dir = get_project_root() }) end, silent = true }
+  -- maps.n["<Leader>m"] = { function () neotreecmd.execute({ toggle = true, dir = get_project_root() }) end, desc="Neotree toggle", silent = true }
+
+
   maps.n["<A-m>"] = { ":Neotree toggle<CR>", silent = true }
   maps.n["<Leader>m"] = { ":Neotree toggle<CR>", silent = true }
 
