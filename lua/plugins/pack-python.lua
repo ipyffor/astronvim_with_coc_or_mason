@@ -31,18 +31,9 @@ return {
     -- },
     config = function()
       local conda_envs = os.getenv("CONDA_ENVS")
-      local conda_base = "~/miniconda3/"
       if not conda_envs then
-        conda_base = vim.fn.system('conda info --base')
-        if conda_base ~= '' then
-          -- 去除输出中可能的换行符
-          conda_base = string.gsub(conda_base, '\n', '')
-          print('Conda base path: ' .. conda_base)
-        else
-          conda_base = '~/miniconda3'
-          print('Error: Conda command not found')
-        end
-        local conda_envs = conda_base .. "/envs"
+        local conda_base = "~/miniconda3"
+        conda_envs = conda_base .. "/envs"
       end
 
       function on_venv_changed(venv_path, venv_python)
@@ -51,7 +42,7 @@ return {
       require("venv-selector").setup({
         anaconda_base_path = conda_base,
         anaconda_envs_path = conda_envs,
-        changed_venv_hooks = table.insert(require("venv-selector.config").default_settings, on_venv_changed),
+        changed_venv_hooks = table.insert(require("venv-selector.config").default_settings.changed_venv_hooks, on_venv_changed),
         enable_debug_output = false
       })
     end,

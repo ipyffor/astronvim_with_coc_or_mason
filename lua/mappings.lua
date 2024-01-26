@@ -38,7 +38,7 @@ pluginKeys.cmp = function(cmp)
         --     feedkey("<Plug>(vsnip-expand-or-jump)", "")
         -- elseif has_words_befo`
       else
-        fallback()         -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
+        fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
       end
     end, { "i", "s" }),
 
@@ -57,10 +57,10 @@ pluginKeys.cmp = function(cmp)
 
     ["<A-.>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
     -- 取消
-    ["<A-,>"] = cmp.mapping({
+    ["<A-,>"] = cmp.mapping {
       i = cmp.mapping.abort(),
       c = cmp.mapping.close(),
-    }),
+    },
     -- 上一个
     ["<A-k>"] = cmp.mapping.select_prev_item(),
     -- 下一个
@@ -70,13 +70,12 @@ pluginKeys.cmp = function(cmp)
       else
         cmp.complete()
       end
-    end, { "i", "s" })
-    ,
+    end, { "i", "s" }),
     -- 确认
-    ["<CR>"] = cmp.mapping.confirm({
+    ["<CR>"] = cmp.mapping.confirm {
       select = true,
       behavior = cmp.ConfirmBehavior.Replace,
-    }),
+    },
     -- 如果窗口内容太多，可以滚动
     -- ["<C-u>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
     -- ["<C-d>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
@@ -103,6 +102,65 @@ pluginKeys.cmp_cmdline = function(cmp, default_mappings)
   return default_mappings
 end
 
+local neotree = {}
+neotree.window = {
+  ["<tab>"] = {
+    "toggle_node",
+    nowait = false, -- disable `nowait` if you have existing combos starting with this char that you want to use
+  },
+  ["<2-LeftMouse>"] = "open",
+  ["<cr>"] = "open",
+  ["<esc>"] = "cancel", -- close preview or floating neo-tree window
+  ["P"] = { "toggle_preview", config = { use_float = true, use_image_nvim = true } },
+  -- Read `# Preview Mode` for more information
+  ["l"] = "focus_preview",
+  ["S"] = "open_split",
+  ["s"] = "open_vsplit",
+  -- ["S"] = "split_with_window_picker",
+  -- ["s"] = "vsplit_with_window_picker",
+  ["t"] = "open_tabnew",
+  -- ["<cr>"] = "open_drop",
+  -- ["t"] = "open_tab_drop",
+  ["w"] = "open_with_window_picker",
+  --["P"] = "toggle_preview", -- enter preview mode, which shows the current node without focusing
+  ["C"] = "close_node",
+  -- ['C'] = 'close_all_subnodes',
+  ["z"] = "close_all_nodes",
+  --["Z"] = "expand_all_nodes",
+  ["a"] = {
+    "add",
+    -- this command supports BASH style brace expansion ("x{a,b,c}" -> xa,xb,xc). see `:h neo-tree-file-actions` for details
+    -- some commands may take optional config options, see `:h neo-tree-mappings` for details
+    config = {
+      show_path = "none", -- "none", "relative", "absolute"
+    },
+  },
+  ["A"] = "add_directory", -- also accepts the optional config.show_path option like "add". this also supports BASH style brace expansion.
+  ["d"] = "delete",
+  ["r"] = "rename",
+  ["y"] = "",
+  ["ya"] = "copy_absolute_path",
+
+  ["yr"] = "copy_relative_path",
+  ["yy"] = "copy_to_clipboard",
+  ["x"] = "cut_to_clipboard",
+  ["p"] = "paste_from_clipboard",
+  ["c"] = "copy", -- takes text input for destination, also accepts the optional config.show_path option like "add":
+  -- ["c"] = {
+  --  "copy",
+  --  config = {
+  --    show_path = "none" -- "none", "relative", "absolute"
+  --  }
+  --}
+  ["m"] = "move", -- takes text input for destination, also accepts the optional config.show_path option like "add".
+  ["q"] = "close_window",
+  ["R"] = "refresh",
+  ["?"] = "show_help",
+  ["<"] = "prev_source",
+  [">"] = "next_source",
+  ["i"] = "show_file_details",
+}
+pluginKeys.neotree = neotree
 M.pluginKeys = pluginKeys
 
 function M.mappings(maps)
@@ -164,7 +222,6 @@ function M.mappings(maps)
   -- maps.v["J"] = { ":move '>+1<CR>gv-gv", silent = true }
   -- maps.v["K"] = { ":move '<-2<CR>gv-gv", silent = true }
 
-
   -- 上下滚动浏览
   -- maps.n["<C-j>"] = { "4j", silent = true }
   -- maps.n["<C-k>"] = { "4k", silent = true }
@@ -179,17 +236,14 @@ function M.mappings(maps)
   maps.i["<C-h>"] = { "<ESC>hi", silent = true }
   maps.i["<C-l>"] = { "<ESC>la", silent = true }
 
-
   -- nvim-tree
   -- local get_project_root = require("project_nvim.project").get_project_root
   -- local neotreecmd = require("neo-tree.command")
   -- maps.n["<A-m>"] = { function () neotreecmd.execute({ toggle = true, dir = get_project_root() }) end, silent = true }
   -- maps.n["<Leader>m"] = { function () neotreecmd.execute({ toggle = true, dir = get_project_root() }) end, desc="Neotree toggle", silent = true }
 
-
   maps.n["<A-m>"] = { ":Neotree toggle<CR>", silent = true }
   maps.n["<Leader>m"] = { ":Neotree toggle<CR>", silent = true }
-
 
   -- -- bufferline
   -- -- 左右Tab切换
@@ -228,20 +282,18 @@ function M.mappings(maps)
     -- 查找文件
     maps.n["<Leader>fp"] = { ":Telescope find_files<CR>", desc = "Find files", silent = true }
     maps.n["<Leader>fl"] = {
-      ':lua require("telescope.builtin")' ..
-      '.find_files({cwd = vim.fs.normalize("/")})<CR>',
+      ':lua require("telescope.builtin")' .. '.find_files({cwd = vim.fs.normalize("/")})<CR>',
       desc = "Find files /",
-      silent = true
+      silent = true,
     }
     maps.n["<Leader>ff"] = { ":Telescope file_browser<CR>", desc = "Telescope file_browser", silent = true }
     maps.n["<Leader>fP"] = { ":Telescope media_files<CR>", desc = "Telescope media_files", silent = true }
     -- 全局搜索
     maps.n["<Leader>sp"] = { ":Telescope live_grep<CR>", desc = "Telescope live_grep", silent = true }
     maps.n["<Leader>ss"] = {
-      ':lua require("telescope.builtin")' ..
-      '.current_buffer_fuzzy_find({results_ts_highlight = false})<CR>',
+      ':lua require("telescope.builtin")' .. ".current_buffer_fuzzy_find({results_ts_highlight = false})<CR>",
       desc = "Search in current buffer",
-      silent = true
+      silent = true,
     }
     maps.n["<Leader>fs"] = { "<cmd>w<CR>", desc = "Save file", silent = true }
     -- maps.n["<Leader>ff"] = { ":lua require('telescope.builtin').find_files( { cwd = vim.fn.expand('%:p:h') })<cr>", desc =
@@ -553,13 +605,13 @@ function M.mappings(maps)
   -- 多个窗口之间跳转
   maps.n["<Leader>w="] = { "<C-w>=", desc = "Make all window equal" }
   maps.n["<TAB>"] =
-  { function() require("astrocore.buffer").nav(vim.v.count > 0 and vim.v.count or 1) end, desc = "Next buffer" }
+    { function() require("astrocore.buffer").nav(vim.v.count > 0 and vim.v.count or 1) end, desc = "Next buffer" }
   maps.n["<S-TAB>"] = {
     function() require("astrocore.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
     desc = "Previous buffer",
   }
   maps.n["<Leader>bo"] =
-  { function() require("astrocore.buffer").close_all(true) end, desc = "Close all buffers except current" }
+    { function() require("astrocore.buffer").close_all(true) end, desc = "Close all buffers except current" }
   maps.n["<Leader>ba"] = { function() require("astrocore.buffer").close_all() end, desc = "Close all buffers" }
   maps.n["<Leader>bc"] = { function() require("astrocore.buffer").close() end, desc = "Close buffer" }
   maps.n["<Leader>bC"] = { function() require("astrocore.buffer").close(0, true) end, desc = "Force close buffer" }

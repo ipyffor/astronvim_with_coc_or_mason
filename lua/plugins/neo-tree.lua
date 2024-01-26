@@ -9,6 +9,25 @@ return {
     return require("astrocore").extend_tbl(opts, {
       close_if_last_window = true,
       enable_diagnostics = true,
+      commands = {
+        copy_relative_path = function(state)
+          -- NeoTree is based on [NuiTree](https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/tree)
+          -- The node is based on [NuiNode](https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/tree#nuitreenode)
+          local node = state.tree:get_node()
+          local filepath = node:get_id()
+          filepath = vim.fn.fnamemodify(filepath, ":.")
+          vim.fn.setreg('"', filepath)
+          vim.notify("Copied: " .. filepath)
+        end,
+        copy_absolute_path = function(state)
+          -- NeoTree is based on [NuiTree](https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/tree)
+          -- The node is based on [NuiNode](https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/tree#nuitreenode)
+          local node = state.tree:get_node()
+          local filepath = node:get_id()
+          vim.fn.setreg('"', filepath)
+          vim.notify("Copied: " .. filepath)
+        end,
+      },
       sources = {
         "filesystem",
         -- "netman.ui.neo-tree",
@@ -23,6 +42,9 @@ return {
           -- { source = "git_status", display_name = get_icon("Git", 1, true) .. "Git" },
           -- { source = "remote", display_name = get_icon("Session", 1, true) .. "Remote" },
         },
+      },
+      window = {
+        mappings = require("mappings").pluginKeys.neotree.window,
       },
       filesystem = {
         -- hijack_netrw_behavior = "open_default",
