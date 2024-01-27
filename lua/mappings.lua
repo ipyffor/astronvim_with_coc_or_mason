@@ -286,7 +286,8 @@ function M.mappings(maps)
       desc = "Find files /",
       silent = true,
     }
-    maps.n["<Leader>ff"] = { ":Telescope file_browser<CR>", desc = "Telescope file_browser", silent = true }
+    maps.n["<Leader>ff"] = { ':e ', desc = "find file", silent = true }
+    -- maps.n["<Leader>ff"] = { ":Telescope file_browser<CR>", desc = "Telescope file_browser", silent = true }
     maps.n["<Leader>fP"] = { ":Telescope media_files<CR>", desc = "Telescope media_files", silent = true }
     -- 全局搜索
     maps.n["<Leader>sp"] = { ":Telescope live_grep<CR>", desc = "Telescope live_grep", silent = true }
