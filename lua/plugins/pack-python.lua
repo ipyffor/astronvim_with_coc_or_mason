@@ -30,23 +30,25 @@ return {
     --   anaconda_envs_path = "~/miniconda3/envs",
     -- },
     config = function()
-      local conda_envs = os.getenv("CONDA_ENVS")
+      local conda_envs = os.getenv "CONDA_ENVS"
+      local conda_base
       if not conda_envs then
-        local conda_base = "~/miniconda3"
+        conda_base = "~/miniconda3"
         conda_envs = conda_base .. "/envs"
       end
 
-      function on_venv_changed(venv_path, venv_python)
-        vim.env.VIRTUAL_ENV = venv_path:match("([^/\\]+)$")
-      end
-      require("venv-selector").setup({
+      function on_venv_changed(venv_path, venv_python) vim.env.VIRTUAL_ENV = venv_path end
+      require("venv-selector").setup {
         anaconda_base_path = conda_base,
         anaconda_envs_path = conda_envs,
-        changed_venv_hooks = table.insert(require("venv-selector.config").default_settings.changed_venv_hooks, on_venv_changed),
-        enable_debug_output = false
-      })
+        changed_venv_hooks = table.insert(
+          require("venv-selector.config").default_settings.changed_venv_hooks,
+          on_venv_changed
+        ),
+        enable_debug_output = false,
+      }
     end,
-    cmd = {'VenvSelect', 'VenvSelectCached'}
+    cmd = { "VenvSelect", "VenvSelectCached" },
   },
   {
     "mfussenegger/nvim-dap-python",
@@ -54,7 +56,8 @@ return {
     ft = "python", -- NOTE: ft: lazy-load on filetype
     config = function(_, opts)
       local path = require("mason-registry").get_package("debugpy"):get_install_path() .. "/venv/bin/python"
-      require("dap-python").setup(path, opts)
+      local dap_python = require "dap-python"
+      dap_python.setup(path, opts)
     end,
   },
 }
