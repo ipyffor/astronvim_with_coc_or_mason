@@ -579,21 +579,25 @@ function M.mappings(maps)
   maps.v["<"] = { "<gv", desc = "Unindent line" }
   maps.v[">"] = { ">gv", desc = "Indent line" }
 
-  if is_available "toggleterm.nvim" then
-    if vim.fn.executable "lazygit" == 1 then
-      maps.n["<Leader>tl"] = {
-        require("utils").toggle_lazy_git(),
-        desc = "ToggleTerm lazygit",
-      }
-      maps.n["<Leader>gg"] = maps.n["<Leader>tl"]
-    end
-    if vim.fn.executable "joshuto" == 1 then
-      maps.n["<Leader>tj"] = {
-        require("utils").toggle_joshuto(),
-        desc = "ToggleTerm joshuto",
-      }
-    end
-  end
+  maps.n["<Leader>gg"] = {
+    "<cmd>Neogit<cr>",
+    desc = "Neogit",
+  }
+  -- if is_available "toggleterm.nvim" then
+  --   if vim.fn.executable "lazygit" == 1 then
+  --     maps.n["<Leader>tl"] = {
+  --       require("utils").toggle_lazy_git(),
+  --       desc = "ToggleTerm lazygit",
+  --     }
+  --     maps.n["<Leader>gg"] = maps.n["<Leader>tl"]
+  --   end
+  --   if vim.fn.executable "joshuto" == 1 then
+  --     maps.n["<Leader>tj"] = {
+  --       require("utils").toggle_joshuto(),
+  --       desc = "ToggleTerm joshuto",
+  --     }
+  --   end
+  -- end
 
   -- 在visual mode 里粘贴不要复制
   maps.n["x"] = { '"_x', desc = "Cut without copy" }
