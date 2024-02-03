@@ -315,6 +315,9 @@ function M.mappings(maps)
     }
   end
 
+  maps.n['<Leader>da'] = {require("config.dap").add_launchjs_from_template, desc = 'add launchjs'}
+  maps.n['<Leader>dc'] = {require("config.dap").continue, desc = "Start/continue (F5)"}
+  maps.n['<F5>'] = {require("config.dap").continue, desc = "Start/continue (F5)"}
   if is_available "nvim-dap-ui" then
     maps.n["<Leader>dU"] = {
       function() require("dapui").toggle { reset = true } end,

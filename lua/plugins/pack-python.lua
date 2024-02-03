@@ -38,13 +38,13 @@ return {
       end
 
       function on_venv_changed(venv_path, venv_python) vim.env.VIRTUAL_ENV = venv_path end
+      local changed_venv_hooks = require("venv-selector.config").default_settings.changed_venv_hooks
+      table.insert(changed_venv_hooks, on_venv_changed)
+
       require("venv-selector").setup {
         anaconda_base_path = conda_base,
         anaconda_envs_path = conda_envs,
-        changed_venv_hooks = table.insert(
-          require("venv-selector.config").default_settings.changed_venv_hooks,
-          on_venv_changed
-        ),
+        changed_venv_hooks = changed_venv_hooks,
         enable_debug_output = false,
       }
     end,
