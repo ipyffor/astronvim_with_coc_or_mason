@@ -306,6 +306,7 @@ end
 
 M.continue = function()
   if vim.fn.filereadable ".vscode/launch.json" then
+    -- M.load_launchjs(nil, { cppdbg = { "c", "cpp" } })
     require("dap.ext.vscode").load_launchjs(nil, { cppdbg = { "c", "cpp" } })
   end
   require("dap").continue()

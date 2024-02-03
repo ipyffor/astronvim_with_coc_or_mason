@@ -25,6 +25,12 @@ return {
       local dap, dapui = require "dap", require "dapui"
       dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
       dapui.setup(opts)
+
+      -- 暂时未解决
+      -- dap.adapters.cppdbg = function(cb, config)
+      --   if config.precmd then vim.fn.system(config.precmd) end
+      --   dap.adapters.cppdbg(cb, config)
+      -- end
     end,
   },
 }
