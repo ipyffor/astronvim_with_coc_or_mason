@@ -1,12 +1,18 @@
+-- NOTE:: event `AstroLargeBuf` that is triggered when a large buffer is detected.
 ---@type AstroCoreOpts
 -- AstroCore allows you easy access to customize the default options provided in AstroNvim
 return {
   "AstroNvim/astrocore",
   opts = function(_, opts)
-    local resession = require "resession"
-    local augroup = vim.api.nvim_create_augroup
-
     local options = require("astrocore").extend_tbl(opts, {
+      -- modify core features of AstroNvim
+      features = {
+        large_buf = { size = 1024 * 100, lines = 10000 }, -- set global limits for large files for disabling features like treesitter
+        autopairs = true, -- enable autopairs at start
+        cmp = true, -- enable completion at start
+        highlighturl = true, -- highlight URLs at start
+        notifications = true, -- enable notifications at start
+      },
       autocmds = {
         auto_turnoff_paste = {
           event = "InsertLeave",
@@ -39,13 +45,27 @@ return {
           {
             event = "VimEnter",
             desc = "Restore session on open",
-            group = augroup("resession_auto_open", { clear = true }),
             callback = function()
-              -- Only load the session if nvim was started with no args
-              if vim.fn.argc(-1) == 0 then
-                -- Save these to a different directory, so our manual sessions don't get polluted
-                resession.load(vim.fn.getcwd(), { dir = "dirsession", silence_errors = true })
+              if require("astrocore").is_available "resession.nvim" then
+                local resession = require "resession"
+                -- Only load the session if nvim was started with no args
+                if vim.fn.argc(-1) == 0 then
+                  -- Save these to a different directory, so our manual sessions don't get polluted
+                  resession.load(vim.fn.getcwd(), { dir = "dirsession", silence_errors = true })
+                  vim.cmd.doautoall "BufReadPre"
+                end
               end
+            end,
+          },
+        },
+        auto_conceallevel_for_json = {
+          {
+            event = "FileType",
+            desc = "Fix conceallevel for json files",
+            pattern = { "json", "jsonc" },
+            callback = function()
+              vim.wo.spell = false
+              vim.wo.conceallevel = 0
             end,
           },
         },

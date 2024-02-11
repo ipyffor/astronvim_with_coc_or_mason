@@ -32,6 +32,62 @@ function M.print_r ( t )
       sub_print_r(t,"  ")
   end
   print()
+function M.write_to_file(content, file_path)
+  local file = io.open(file_path, "a")
+  if not file then
+    print("Unable to open file: " .. file_path)
+    return
+  end
+  file:write(vim.inspect(content))
+  file:write "\n"
+  file:close()
+end
+
+function M.check_json_key_exists(filename, key)
+  -- Open the file in read mode
+  local file = io.open(filename, "r")
+  if not file then
+    return false -- File doesn't exist or cannot be opened
+  end
+
+  -- Read the contents of the file
+  local content = file:read "*all"
+  file:close()
+
+  -- Parse the JSON content
+  local json_parsed, json = pcall(vim.fn.json_decode, content)
+  if not json_parsed or type(json) ~= "table" then
+    return false -- Invalid JSON format
+  end
+
+  -- Check if the key exists in the JSON object
+  return json[key] ~= nil
+end
+
+function M.is_vue_project()
+  local package_path = vim.fn.getcwd() .. "/package.json"
+  local file = io.open(package_path, "r")
+
+  if not file then
+    return false -- File doesn't exist or cannot be opened
+  end
+
+  -- Read the contents of the file
+  local content = file:read "*all"
+  file:close()
+
+  -- Parse the JSON content
+  local json_parsed, json = pcall(vim.fn.json_decode, content)
+  if not json_parsed or type(json) ~= "table" then
+    return false -- Invalid JSON format
+  end
+
+  -- Check if the key exists in the JSON object
+  if json and json.dependencies and json.dependencies.vue then
+    return true
+  else
+    return false
+  end
 end
 
 function M.better_search(key)
@@ -45,6 +101,22 @@ end
 function M.remove_keymap(mode, key)
   for _, map in pairs(vim.api.nvim_get_keymap(mode)) do
     if map.lhs == key then vim.api.nvim_del_keymap(mode, key) end
+  end
+end
+
+function M.toggle_unicmatrix()
+  return function()
+    require("astrocore").toggle_term_cmd {
+      cmd = "unimatrix -s 96 -o -b",
+      hidden = false,
+      direction = "float",
+      float_opts = {
+        -- Enable full screen
+        width = vim.o.columns,
+        height = vim.o.lines,
+        border = "none",
+      },
+    }
   end
 end
 
@@ -75,12 +147,22 @@ function M.toggle_lazy_git()
   end
 end
 
-function M.toggle_joshuto(path)
+local function file_exists(path)
+  local f = io.open(path, "r")
+  if f ~= nil then
+    io.close(f)
+    return true
+  else
+    return false
+  end
+end
+
+function M.toggle_yazi(path)
   return function()
-    local output_path = "/tmp/joshuto_filechosen"
+    local output_path = "/tmp/yazi_filechosen"
     os.remove(output_path)
     path = vim.fn.expand "%:p:h"
-    local cmd = string.format('joshuto --file-chooser --output-file "%s" "%s"', output_path, path)
+    local cmd = string.format('yazi "%s" --chooser-file "%s"', path, output_path)
     require("astrocore").toggle_term_cmd {
       cmd = cmd,
       hidden = true,
@@ -97,16 +179,18 @@ function M.toggle_joshuto(path)
         vim.api.nvim_set_keymap("t", "<C-l>", "<cmd>wincmd l<cr>", { silent = true, noremap = true })
       end,
       on_exit = function(t, job, code, event)
-        if code == 102 then
-          local open_path = vim.fn.readfile(output_path)[1]
-          vim.cmd "silent! :checktime"
-          vim.loop.new_timer():start(
-            0,
-            0,
-            vim.schedule_wrap(function()
-              if open_path then vim.cmd(string.format("edit %s", open_path)) end
-            end)
-          )
+        if code == 0 then
+          if file_exists(output_path) then
+            local open_path = vim.fn.readfile(output_path)[1]
+            vim.cmd "silent! :checktime"
+            vim.loop.new_timer():start(
+              0,
+              0,
+              vim.schedule_wrap(function()
+                if open_path then vim.cmd(string.format("edit %s", open_path)) end
+              end)
+            )
+          end
         end
       end,
     }

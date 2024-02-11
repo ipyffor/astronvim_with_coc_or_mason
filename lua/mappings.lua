@@ -1,5 +1,6 @@
 local system = vim.loop.os_uname().sysname
 local is_available = require("astrocore").is_available
+local utils = require "astrocore"
 local M = {}
 local pluginKeys = {}
 -- nvim-cmp 自动补全
@@ -176,6 +177,10 @@ function M.mappings(maps)
   maps.i["<C-s>"] = { "<esc>:w<cr>a", desc = "Save file", silent = true }
 
   maps.n["<Leader>wo"] = { "<C-w>o", desc = "Close other screen" }
+  maps.v["p"] = { "pgvy", desc = "Paste" }
+  if vim.fn.executable "btm" == 1 then
+    maps.n["<Leader>tT"] = { function() utils.toggle_term_cmd "btm" end, desc = "ToggleTerm btm" }
+  end
 
   -- windows 分屏快捷键
   maps.n["sv"] = { ":vsp<CR>", desc = "Split vertically", silent = true }
@@ -271,7 +276,18 @@ function M.mappings(maps)
       maps.c["<D-v>"] = "<C-R>+"
       -- Paste insert mode
       maps.i["<D-v>"] = '<esc>"+pli'
+
+      -- Allow clipboard copy paste in neovim
+      vim.api.nvim_set_keymap("", "<D-v>", "+p<CR>", { noremap = true, silent = true })
+      vim.api.nvim_set_keymap("!", "<D-v>", "<C-R>+", { noremap = true, silent = true })
+      vim.api.nvim_set_keymap("t", "<D-v>", "<C-R>+", { noremap = true, silent = true })
+      vim.api.nvim_set_keymap("v", "<D-v>", "<C-R>+", { noremap = true, silent = true })
     end
+  end
+
+  if is_available "cellular-automaton.nvim" then
+    maps.n["<Leader>um"] = { "<cmd>CellularAutomaton make_it_rain<CR>", desc = "Make it rain" }
+    maps.n["<Leader>uM"] = { "<cmd>CellularAutomaton game_of_life<CR>", desc = "Game of life" }
   end
 
   -- telescope plugin mappings
@@ -313,15 +329,48 @@ function M.mappings(maps)
       end,
       desc = "Switch Buffers In Telescope",
     }
+    maps.n["<Leader>fp"] = {
+      "<cmd>Telescope projects<CR>",
+      desc = "Switch Buffers In Telescope",
+    }
   end
 
   maps.n['<Leader>da'] = {require("config.dap").add_launchjs_from_template, desc = 'add launchjs'}
   maps.n['<Leader>dc'] = {require("config.dap").continue, desc = "Start/continue (F5)"}
   maps.n['<F5>'] = {require("config.dap").continue, desc = "Start/continue (F5)"}
   if is_available "nvim-dap-ui" then
+    maps.n["<Leader>dj"] = {
+      function() require("dap").down() end,
+      desc = "Down Strace",
+    }
+    maps.n["<Leader>dk"] = {
+      function() require("dap").up() end,
+      desc = "Up Strace",
+    }
+    maps.n["<Leader>dp"] = {
+      function() require("dap.ui.widgets").preview() end,
+      desc = "Debugger Preview",
+    }
+    maps.n["<Leader>dP"] = { function() require("dap").pause() end, desc = "Pause (F6)" }
+    maps.n["<Leader>du"] = {
+      function() require("dapui").toggle { layout = 2, reset = true } end,
+      desc = "Toggle Tray Debugger UI and reset layout",
+    }
     maps.n["<Leader>dU"] = {
       function() require("dapui").toggle { reset = true } end,
-      desc = "Toggle Debugger UI and reset layout",
+      desc = "Toggle All Debugger UI and reset layout",
+    }
+    maps.n["<Leader>dr"] = {
+      function() require("dap").run_last() end,
+      desc = "Run Last",
+    }
+    maps.n["<Leader>dR"] = {
+      function() require("dap").restart_frame() end,
+      desc = "Restart (C-F5)",
+    }
+    maps.n["<Leader>dd"] = {
+      function() require("dapui").float_element() end,
+      desc = "Open Dap UI Float Element",
     }
     if is_available "persistent-breakpoints.nvim" then
       maps.n["<F9>"] = {
@@ -562,7 +611,6 @@ function M.mappings(maps)
   maps.n["<Leader>nh"] = { ":nohlsearch<CR>", desc = "Close search highlight" }
 
   maps.n["<Leader><Leader>"] = { desc = "󰍉 User" }
-  maps.n["s"] = "<Nop>"
 
   maps.n["H"] = { "^", desc = "Go to start without blank" }
   maps.n["L"] = { "$", desc = "Go to end without blank" }
@@ -601,6 +649,28 @@ function M.mappings(maps)
   --     }
   --   end
   -- end
+  if is_available "toggleterm.nvim" then
+    if vim.fn.executable "lazygit" == 1 then
+      maps.n["<Leader>tl"] = {
+        require("utils").toggle_lazy_git(),
+        desc = "ToggleTerm lazygit",
+      }
+      maps.n["<Leader>gg"] = maps.n["<Leader>tl"]
+    end
+    if vim.fn.executable "yazi" == 1 then
+      maps.n["<Leader>ty"] = {
+        require("utils").toggle_yazi(),
+        desc = "ToggleTerm yazi",
+      }
+    end
+
+    if vim.fn.executable "unimatrix" == 1 then
+      maps.n["<Leader>tm"] = {
+        require("utils").toggle_unicmatrix(),
+        desc = "ToggleTerm unimatrix",
+      }
+    end
+  end
 
   -- 在visual mode 里粘贴不要复制
   maps.n["x"] = { '"_x', desc = "Cut without copy" }
@@ -679,12 +749,6 @@ function M.mappings(maps)
   if is_available "nvim-treesitter" then
     -- TsInformation
     maps.n["<Leader>lT"] = { "<cmd>TSInstallInfo<cr>", desc = "Tree sitter Information" }
-  end
-
-  if is_available "neoconf.nvim" then
-    maps.n["<Leader>pd"] = { "<cmd>Neoconf<CR>", desc = "Select local/global neoconf config" }
-    maps.n["<Leader>pb"] = { "<cmd>Neoconf show<CR>", desc = "Show neoconf merge config" }
-    maps.n["<Leader>pc"] = { "<cmd>Neoconf lsp<CR>", desc = "Show neoconf merge lsp config" }
   end
 
   return maps

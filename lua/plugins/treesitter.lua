@@ -5,21 +5,8 @@ return {
   "nvim-treesitter/nvim-treesitter",
   opts = function(_, opts)
     -- Ensure that opts.ensure_installed exists and is a table or string "all".
-    if opts.ensure_installed ~= "all" then
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, "ron")
-    end
-    return require("astrocore").extend_tbl(opts, {
-      autotag = {
-        enable = true,
-        enable_close_on_slash = true,
-      },
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          node_incremental = "v",
-          node_decremental = "V",
-        },
-      },
-    })
+    -- if opts.ensure_installed ~= "all" then end
+    -- WARN: https://github.com/windwp/nvim-ts-autotag/issues/143
+    return require("astrocore").extend_tbl(opts, {})
   end,
 }

@@ -2,7 +2,7 @@ local M = {}
 
 function M.init()
   M.config()
-  M.background()
+  -- M.background()
   M.refresh(60, 5)
 end
 

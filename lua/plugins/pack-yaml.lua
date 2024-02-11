@@ -29,7 +29,7 @@ return {
     optional = true,
     opts = function(_, opts)
       if opts.ensure_installed ~= "all" then
-        opts.ensure_installed = utils.list_insert_unique(opts.ensure_installed, "yaml")
+        opts.ensure_installed = utils.list_insert_unique(opts.ensure_installed, "xml", "yaml")
       end
     end,
   },
@@ -39,8 +39,11 @@ return {
     opts = function(_, opts) opts.ensure_installed = utils.list_insert_unique(opts.ensure_installed, "yamlls") end,
   },
   {
-    "jay-babu/mason-null-ls.nvim",
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
     optional = true,
-    opts = function(_, opts) opts.ensure_installed = utils.list_insert_unique(opts.ensure_installed, "prettierd") end,
+    opts = function(_, opts)
+      -- format
+      opts.ensure_installed = utils.list_insert_unique(opts.ensure_installed, "prettierd")
+    end,
   },
 }

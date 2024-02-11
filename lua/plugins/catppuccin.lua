@@ -1,32 +1,34 @@
 return {
-  "catppuccin/nvim",
-  name = "catppuccin",
-  opts = {
-    transparent_background = vim.g.transparent_background,
-    integrations = {
-      alpha = true,
-      flash = true,
-      gitsigns = true,
-      markdown = true,
-      neotree = true,
-      mason = true,
-      neogit = true,
-      neotest = true,
-      noice = true,
-      cmp = true,
-      dap = true,
-      dap_ui = true,
-      notify = false,
-      treesitter_context = true,
-      treesitter = true,
-      ts_rainbow2 = true,
-      ts_rainbow = true,
-      ufo = true,
-      telescope = {
-        enabled = true,
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    ---@type CatppuccinOptions
+    opts = {
+      integrations = {
+        telescope = { enabled = true, style = "nvchad" },
       },
-      lsp_trouble = true,
-      which_key = true,
+      custom_highlights = {
+        -- disable italics  for treesitter highlights
+        TabLineFill = { link = "StatusLine" },
+        LspInlayHint = { style = { "italic" } },
+        UfoFoldedEllipsis = { link = "UfoFoldedFg" },
+        ["@parameter"] = { style = {} },
+        ["@type.builtin"] = { style = {} },
+        ["@namespace"] = { style = {} },
+        ["@text.uri"] = { style = { "underline" } },
+        ["@tag.attribute"] = { style = { "italic" } },
+        ["@tag.attribute.tsx"] = { style = { "italic" } },
+      },
+    },
+  },
+  {
+    "nvim-telescope/telescope.nvim",
+    optional = true,
+    opts = {
+      highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = true,
+      },
     },
   },
 }

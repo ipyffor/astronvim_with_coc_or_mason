@@ -1,6 +1,63 @@
 local utils = require "astrocore"
 return {
   {
+    "AstroNvim/astrolsp",
+    ---@type AstroLSPOpts
+    opts = {
+      ---@diagnostic disable: missing-fields
+      config = {
+        tailwindcss = {
+          settings = {
+            tailwindCSS = {
+              classAttributes = {
+                "class",
+                "className",
+                "ngClass",
+                "classList",
+              },
+              experimental = {
+                classRegex = {
+                  { "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
+                  { "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
+                  {
+                    "tw`([^`]*)",
+                    'tw="([^"]*)',
+                    'tw={"([^"}]*)',
+                    "tw\\.\\w+`([^`]*)",
+                    "tw\\(.*?\\)`([^`]*)",
+                  },
+                },
+              },
+              includeLanguages = {
+                typescript = "javascript",
+                typescriptreact = "javascript",
+              },
+              emmetCompletions = false,
+              validate = true,
+              lint = {
+                cssConflict = "warning",
+                invalidApply = "error",
+                invalidConfigPath = "error",
+                invalidScreen = "error",
+                invalidTailwindDirective = "error",
+                invalidVariant = "error",
+                recommendedVariantOrder = "warning",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  {
+    "razak17/tailwind-fold.nvim",
+    opts = {
+      min_chars = 0,
+    },
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    ft = { "html", "svelte", "astro", "vue", "typescriptreact" },
+  },
+  {
     "nvim-treesitter/nvim-treesitter",
     optional = true,
     opts = function(_, opts)
@@ -13,13 +70,15 @@ return {
     "williamboman/mason-lspconfig.nvim",
     optional = true,
     opts = function(_, opts)
-      opts.ensure_installed = utils.list_insert_unique(opts.ensure_installed, { "tailwindcss", "cssls" })
+      opts.ensure_installed = utils.list_insert_unique(opts.ensure_installed, "tailwindcss", "cssls")
     end,
   },
   {
     "jay-babu/mason-null-ls.nvim",
     optional = true,
-    opts = function(_, opts) opts.ensure_installed = utils.list_insert_unique(opts.ensure_installed, { "prettierd" }) end,
+    opts = function(_, opts)
+      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, "prettierd")
+    end,
   },
   {
     "hrsh7th/nvim-cmp",

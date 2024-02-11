@@ -4,7 +4,8 @@ return {
     opts = function(_, opts)
       opts.registries = require("astrocore").list_insert_unique(
         opts.registries,
-        { "lua:custom-registry", "github:mason-org/mason-registry" }
+        "lua:custom-registry",
+        "github:mason-org/mason-registry"
       )
     end,
   },
@@ -24,10 +25,7 @@ return {
       mason_tool_installer.run_on_start()
     end,
   },
-  { "jay-babu/mason-nvim-dap.nvim", optional = true, init = false },
-  {
-    "williamboman/mason-lspconfig.nvim",
-    opts = function(_, opts) end,
-  },
-  { "jay-babu/mason-null-ls.nvim" },
+  { "williamboman/mason-lspconfig.nvim", opts = {} },
+  { "jay-babu/mason-null-ls.nvim", optional = true, opts = {} },
+  { "nvimtools/none-ls.nvim", optional = true, opts = {} },
 }
