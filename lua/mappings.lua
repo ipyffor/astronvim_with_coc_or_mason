@@ -329,10 +329,10 @@ function M.mappings(maps)
       end,
       desc = "Switch Buffers In Telescope",
     }
-    maps.n["<Leader>fp"] = {
-      "<cmd>Telescope projects<CR>",
-      desc = "Switch Buffers In Telescope",
-    }
+    -- maps.n["<Leader>fp"] = {
+    --   "<cmd>Telescope projects<CR>",
+    --   desc = "Switch Buffers In Telescope",
+    -- }
   end
 
   maps.n['<Leader>da'] = {require("config.dap").add_launchjs_from_template, desc = 'add launchjs'}
@@ -655,7 +655,7 @@ function M.mappings(maps)
         require("utils").toggle_lazy_git(),
         desc = "ToggleTerm lazygit",
       }
-      maps.n["<Leader>gg"] = maps.n["<Leader>tl"]
+      -- maps.n["<Leader>gg"] = maps.n["<Leader>tl"]
     end
     if vim.fn.executable "yazi" == 1 then
       maps.n["<Leader>ty"] = {
@@ -733,18 +733,18 @@ function M.mappings(maps)
     }
   end
 
-  if is_available "substitute.nvim" then
-    -- substitute, 交换和替换插件, 寄存器中的值，将会替换到s位置, s{motion}
-    maps.n["s"] = { require("substitute").operator, desc = "Replace with {motion}" }
-    maps.n["ss"] = { require("substitute").line, desc = "Replace with line" }
-    maps.n["S"] = { require("substitute").eol, desc = "Replace until eol" }
-    maps.v["p"] = { require("substitute").visual, desc = "Replace in visual" }
-    -- exchange
-    maps.n["sx"] = { require("substitute.exchange").operator, desc = "Exchange with {motion}" }
-    maps.n["sxx"] = { require("substitute.exchange").line, desc = "Exchange with line" }
-    maps.n["sxc"] = { require("substitute.exchange").cancel, desc = "Exchange exchange" }
-    maps.v["X"] = { require("substitute.exchange").visual, desc = "Exchange in visual" }
-  end
+  -- if is_available "substitute.nvim" then
+  --   -- substitute, 交换和替换插件, 寄存器中的值，将会替换到s位置, s{motion}
+  --   maps.n["s"] = { require("substitute").operator, desc = "Replace with {motion}" }
+  --   maps.n["ss"] = { require("substitute").line, desc = "Replace with line" }
+  --   maps.n["S"] = { require("substitute").eol, desc = "Replace until eol" }
+  --   maps.v["p"] = { require("substitute").visual, desc = "Replace in visual" }
+  --   -- exchange
+  --   maps.n["sx"] = { require("substitute.exchange").operator, desc = "Exchange with {motion}" }
+  --   maps.n["sxx"] = { require("substitute.exchange").line, desc = "Exchange with line" }
+  --   maps.n["sxc"] = { require("substitute.exchange").cancel, desc = "Exchange exchange" }
+  --   maps.v["X"] = { require("substitute.exchange").visual, desc = "Exchange in visual" }
+  -- end
 
   if is_available "nvim-treesitter" then
     -- TsInformation

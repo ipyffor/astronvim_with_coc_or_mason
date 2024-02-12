@@ -127,36 +127,36 @@ return {
         -- 自动选中第一条
         completeopt = "menu,menuone,preview,noinsert",
       },
-      mapping = {
-        ["<CR>"] = cmp.config.disable,
-        -- ctrl + e关闭补全窗口
-        -- <C-n> and <C-p> for navigating snippets
-        ["<C-n>"] = cmp.mapping(function()
-          if luasnip.jumpable(1) then luasnip.jump(1) end
-        end, { "i", "s" }),
-        ["<C-p>"] = cmp.mapping(function()
-          if luasnip.jumpable(-1) then luasnip.jump(-1) end
-        end, { "i", "s" }),
-        ["<C-k>"] = cmp.mapping(
-          function() cmp.select_prev_item { behavior = cmp.SelectBehavior.Select } end,
-          { "i", "s" }
-        ),
-        ["<C-j>"] = cmp.mapping(function()
-          if cmp.visible() then
-            cmp.select_next_item { behavior = cmp.SelectBehavior.Select }
-          else
-            cmp.complete()
-          end
-        end, { "i", "s" }),
-        ["<Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() and has_words_before() then
-            cmp.confirm { select = true }
-          else
-            fallback()
-          end
-        end, { "i", "s" }),
-        ["<S-Tab>"] = cmp.config.disable,
-      },
+      -- mapping = {
+      --   ["<CR>"] = cmp.config.disable,
+      --   -- ctrl + e关闭补全窗口
+      --   -- <C-n> and <C-p> for navigating snippets
+      --   ["<C-n>"] = cmp.mapping(function()
+      --     if luasnip.jumpable(1) then luasnip.jump(1) end
+      --   end, { "i", "s" }),
+      --   ["<C-p>"] = cmp.mapping(function()
+      --     if luasnip.jumpable(-1) then luasnip.jump(-1) end
+      --   end, { "i", "s" }),
+      --   ["<C-k>"] = cmp.mapping(
+      --     function() cmp.select_prev_item { behavior = cmp.SelectBehavior.Select } end,
+      --     { "i", "s" }
+      --   ),
+      --   ["<C-j>"] = cmp.mapping(function()
+      --     if cmp.visible() then
+      --       cmp.select_next_item { behavior = cmp.SelectBehavior.Select }
+      --     else
+      --       cmp.complete()
+      --     end
+      --   end, { "i", "s" }),
+      --   ["<Tab>"] = cmp.mapping(function(fallback)
+      --     if cmp.visible() and has_words_before() then
+      --       cmp.confirm { select = true }
+      --     else
+      --       fallback()
+      --     end
+      --   end, { "i", "s" }),
+      --   ["<S-Tab>"] = cmp.config.disable,
+      -- },
       mapping = require("mappings").pluginKeys.cmp(cmp)
       --   {
       --   ["<CR>"] = cmp.config.disable,

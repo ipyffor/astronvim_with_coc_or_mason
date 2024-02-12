@@ -23,7 +23,8 @@ return {
             ["cmp.entry.get_documentation"] = true,
           },
           signature = {
-            enabled = true,
+            -- use lsp_signature instead
+            enabled = false,
             auto_open = {
               enabled = false,
               trigger = false, -- Automatically show signature help when typing a trigger character from the LSP

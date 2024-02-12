@@ -73,27 +73,27 @@ return {
       ---@diagnostic disable: missing-fields
       config = {
         pylance = {
-          on_attach = function(client, bufnr)
-            if is_available "venv-selector.nvim" then
-              set_mappings({
-                n = {
-                  ["<Leader>lv"] = {
-                    "<cmd>VenvSelect<CR>",
-                    desc = "Select VirtualEnv",
-                  },
-                  ["<Leader>lV"] = {
-                    function()
-                      require("astrocore").notify(
-                        "Current Env:" .. require("venv-selector").get_active_venv(),
-                        vim.log.levels.INFO
-                      )
-                    end,
-                    desc = "Show Current VirtualEnv",
-                  },
-                },
-              }, { buffer = bufnr })
-            end
-          end,
+          -- on_attach = function(client, bufnr)
+          --   if is_available "venv-selector.nvim" then
+          --     set_mappings({
+          --       n = {
+          --         ["<Leader>lv"] = {
+          --           "<cmd>VenvSelect<CR>",
+          --           desc = "Select VirtualEnv",
+          --         },
+          --         ["<Leader>lV"] = {
+          --           function()
+          --             require("astrocore").notify(
+          --               "Current Env:" .. require("venv-selector").get_active_venv(),
+          --               vim.log.levels.INFO
+          --             )
+          --           end,
+          --           desc = "Show Current VirtualEnv",
+          --         },
+          --       },
+          --     }, { buffer = bufnr })
+          --   end
+          -- end,
           filetypes = { "python" },
           root_dir = function(...)
             local util = require "lspconfig.util"

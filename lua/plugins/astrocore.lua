@@ -11,7 +11,7 @@ return {
         autopairs = true, -- enable autopairs at start
         cmp = true, -- enable completion at start
         highlighturl = true, -- highlight URLs at start
-        notifications = true, -- enable notifications at start
+        notifications = false, -- enable notifications at start
       },
       autocmds = {
         auto_turnoff_paste = {
@@ -69,18 +69,19 @@ return {
             end,
           },
         },
-        auto_select_virtualenv = {
-          {
-            event = "VimEnter",
-            desc = "Auto select virtualenv Nvim open",
-            pattern = "*",
-            callback = function()
-              local venv = vim.fn.findfile("pyproject.toml", vim.fn.getcwd() .. ";")
-              if venv ~= "" then require("venv-selector").retrieve_from_cache() end
-            end,
-            once = true,
-          },
-        },
+        -- auto_select_virtualenv = {
+        --   {
+        --     event = "VimEnter",
+        --     desc = "Auto select virtualenv Nvim open",
+        --     pattern = "*",
+        --     callback = function()
+        --       local venv = vim.fn.findfile("pyproject.toml", vim.fn.getcwd() .. ";")
+        --       if venv ~= "" then vim.cmd("silent VenvSelectCached") end
+        --       -- require("venv-selector").retrieve_from_cache()
+        --     end,
+        --     once = true,
+        --   },
+        -- },
       },
       mappings = require("mappings").mappings(opts.mappings),
     })
