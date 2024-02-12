@@ -32,6 +32,7 @@ function M.print_r ( t )
       sub_print_r(t,"  ")
   end
   print()
+end
 function M.write_to_file(content, file_path)
   local file = io.open(file_path, "a")
   if not file then
