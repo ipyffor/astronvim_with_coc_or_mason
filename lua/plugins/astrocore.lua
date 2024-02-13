@@ -11,7 +11,7 @@ return {
         autopairs = true, -- enable autopairs at start
         cmp = true, -- enable completion at start
         highlighturl = true, -- highlight URLs at start
-        notifications = false, -- enable notifications at start
+        notifications = true, -- enable notifications at start, 实现有问题，设为false会影响诊断功能和cmdline
       },
       autocmds = {
         auto_turnoff_paste = {
